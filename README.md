@@ -55,3 +55,5 @@ Next Steps
 - Set up Firebase project in Firebase Console with Firestore, Auth, and Storage enabled
 - Add iOS/Android Firebase configuration files
 - Build and test on device/simulator
+
+  my app
