@@ -11,6 +11,16 @@ void main() async {
   
   await Hive.initFlutter();
   
+  await Future.wait([
+    Hive.openBox('auth'),
+    Hive.openBox('workouts'),
+    Hive.openBox('meals'),
+    Hive.openBox('medicines'),
+    Hive.openBox('appointments'),
+    Hive.openBox('documents'),
+    Hive.openBox('family'),
+  ]);
+  
   await FirebaseService.initialize();
   
   runApp(

@@ -43,15 +43,19 @@ class AuthState {
 }
 
 class AuthNotifier extends AsyncNotifier<AuthState> {
-  late Box _authBox;
+  Box? _authBox;
+
+  Box _getAuthBox() {
+    return _authBox ??= Hive.box('auth');
+  }
 
   @override
   Future<AuthState> build() async {
-    _authBox = Hive.box('auth');
-    final hasSeenOnboarding = _authBox.get('hasSeenOnboarding', defaultValue: false);
-    final userId = _authBox.get('userId');
-    final userName = _authBox.get('userName');
-    final userEmail = _authBox.get('userEmail');
+    final box = _getAuthBox();
+    final hasSeenOnboarding = box.get('hasSeenOnboarding', defaultValue: false);
+    final userId = box.get('userId');
+    final userName = box.get('userName');
+    final userEmail = box.get('userEmail');
     
     return AuthState(
       hasSeenOnboarding: hasSeenOnboarding ?? false,
@@ -127,8 +131,10 @@ class AuthNotifier extends AsyncNotifier<AuthState> {
   }
 
   void setOnboardingComplete() {
-    _authBox.put('hasSeenOnboarding', true);
-    state = AsyncValue.data(state.value!.copyWith(hasSeenOnboarding: true));
+    _getAuthBox().put('hasSeenOnboarding', true);
+    if (state.hasValue) {
+      state = AsyncValue.data(state.value!.copyWith(hasSeenOnboarding: true));
+    }
   }
 }
 
