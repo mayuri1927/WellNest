@@ -1,11 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'app/routes/app_router.dart';
 import 'app/theme/app_theme.dart';
 import 'app/providers/theme_provider.dart';
+import 'core/services/firebase_service.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  
+  await Hive.initFlutter();
+  
+  await FirebaseService.initialize();
+  
   runApp(
     const ProviderScope(
       child: WellNestApp(),
