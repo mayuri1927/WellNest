@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import '../../data/repositories/document_repository_impl.dart';
 
 class DocumentState {
   final List<Document> documents;
@@ -55,21 +56,59 @@ class DocumentNotifier extends AsyncNotifier<DocumentState> {
     return const DocumentState();
   }
 
+  Future<void> fetchDocuments() async {
+    state = const AsyncValue.loading();
+    try {
+      final repository = ref.read(documentRepositoryProvider);
+      final data = await repository.getDocuments();
+      final documents = data.map((d) => Document(
+        id: d['id'] ?? '',
+        userId: d['userId'] ?? '',
+        title: d['title'] ?? '',
+        documentType: d['documentType'] ?? 'Other',
+        fileUrl: d['fileUrl'],
+        fileName: d['fileName'],
+        notes: d['notes'],
+        uploadedAt: d['uploadedAt'] != null ? DateTime.parse(d['uploadedAt']) : DateTime.now(),
+        createdAt: d['createdAt'] != null ? DateTime.parse(d['createdAt']) : DateTime.now(),
+      )).toList();
+      state = AsyncValue.data(DocumentState(documents: documents));
+    } catch (e, st) {
+      state = AsyncValue.error(e.toString().replaceAll('Exception: ', ''), st);
+    }
+  }
+
   Future<void> addDocument(Document document) async {
     state = const AsyncValue.loading();
     try {
-      final current = state.value?.documents ?? [];
-      final newList = [...current, document];
-      await _box.put('documents', newList.map((d) => {'id': d.id, 'userId': d.userId, 'title': d.title, 'documentType': d.documentType, 'fileUrl': d.fileUrl, 'fileName': d.fileName, 'notes': d.notes, 'uploadedAt': d.uploadedAt.toIso8601String(), 'createdAt': d.createdAt.toIso8601String()}).toList());
-      state = AsyncValue.data(DocumentState(documents: newList));
-    } catch (e, st) { state = AsyncValue.error(e.toString(), st); }
+      final repository = ref.read(documentRepositoryProvider);
+      await repository.addDocument({
+        'id': document.id,
+        'userId': document.userId,
+        'title': document.title,
+        'documentType': document.documentType.toLowerCase(),
+        'fileUrl': document.fileUrl,
+        'fileName': document.fileName,
+        'notes': document.notes,
+        'uploadedAt': document.uploadedAt.toIso8601String(),
+        'createdAt': document.createdAt.toIso8601String(),
+      });
+      await fetchDocuments();
+    } catch (e, st) {
+      state = AsyncValue.error(e.toString().replaceAll('Exception: ', ''), st);
+    }
   }
 
   Future<void> deleteDocument(String id) async {
-    final current = state.value?.documents ?? [];
-    final newList = current.where((d) => d.id != id).toList();
-    await _box.put('documents', newList.map((d) => {'id': d.id, 'userId': d.userId, 'title': d.title, 'documentType': d.documentType, 'fileUrl': d.fileUrl, 'fileName': d.fileName, 'notes': d.notes, 'uploadedAt': d.uploadedAt.toIso8601String(), 'createdAt': d.createdAt.toIso8601String()}).toList());
-    state = AsyncValue.data(DocumentState(documents: newList));
+    try {
+      final repository = ref.read(documentRepositoryProvider);
+      await repository.deleteDocument(id);
+      final current = state.value?.documents ?? [];
+      final newList = current.where((d) => d.id != id).toList();
+      state = AsyncValue.data(DocumentState(documents: newList));
+    } catch (e, st) {
+      state = AsyncValue.error(e.toString().replaceAll('Exception: ', ''), st);
+    }
   }
 }
 

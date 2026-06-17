@@ -1,0 +1,70 @@
+import 'package:dio/dio.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../core/constants/api_constants.dart';
+import '../../../../core/network/api_client.dart';
+
+abstract class DocumentRemoteDatasource {
+  Future<List<Map<String, dynamic>>> getDocuments();
+  Future<Map<String, dynamic>> createDocument(Map<String, dynamic> document);
+  Future<void> deleteDocument(String id);
+}
+
+class DocumentRemoteDatasourceImpl implements DocumentRemoteDatasource {
+  final ApiClient _apiClient;
+
+  DocumentRemoteDatasourceImpl(this._apiClient);
+
+  @override
+  Future<List<Map<String, dynamic>>> getDocuments() async {
+    try {
+      final response = await _apiClient.get(ApiEndpoints.documents);
+      return List<dynamic>.from(response.data).cast<Map<String, dynamic>>();
+    } on DioException catch (e) {
+      throw _handleError(e);
+    }
+  }
+
+  @override
+  Future<Map<String, dynamic>> createDocument(Map<String, dynamic> document) async {
+    try {
+      final response = await _apiClient.post(ApiEndpoints.documents, data: document);
+      return response.data;
+    } on DioException catch (e) {
+      throw _handleError(e);
+    }
+  }
+
+  @override
+  Future<void> deleteDocument(String id) async {
+    try {
+      await _apiClient.delete('${ApiEndpoints.documents}/$id');
+    } on DioException catch (e) {
+      throw _handleError(e);
+    }
+  }
+
+  Exception _handleError(DioException e) {
+    if (e.response?.data != null && e.response?.data['message'] != null) {
+      final message = e.response?.data['message'];
+      if (message is List) {
+        return Exception(message.join(', '));
+      }
+      return Exception(message);
+    }
+    switch (e.type) {
+      case DioExceptionType.connectionTimeout:
+      case DioExceptionType.sendTimeout:
+      case DioExceptionType.receiveTimeout:
+        return Exception('Connection timeout.');
+      case DioExceptionType.connectionError:
+        return Exception('Unable to connect to server.');
+      default:
+        return Exception('Something went wrong.');
+    }
+  }
+}
+
+final documentRemoteDatasourceProvider = Provider<DocumentRemoteDatasource>((ref) {
+  final apiClient = ref.watch(apiClientProvider);
+  return DocumentRemoteDatasourceImpl(apiClient);
+});

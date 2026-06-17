@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import '../../data/repositories/family_repository_impl.dart';
 
 class FamilyState {
   final List<FamilyMember> members;
@@ -64,23 +65,55 @@ class FamilyNotifier extends AsyncNotifier<FamilyState> {
     return const FamilyState();
   }
 
+  Future<void> fetchMembers() async {
+    state = const AsyncValue.loading();
+    try {
+      final repository = ref.read(familyRepositoryProvider);
+      final data = await repository.getMembers();
+      final members = data.map((m) => FamilyMember(
+        id: m['id'] ?? '',
+        name: m['name'] ?? '',
+        relation: m['relation'] ?? '',
+        bloodType: m['bloodType'] ?? m['bloodGroup'],
+        dateOfBirth: m['dateOfBirth']?.toString(),
+        notes: m['notes'],
+        createdAt: m['createdAt'] != null ? DateTime.parse(m['createdAt']) : DateTime.now(),
+      )).toList();
+      state = AsyncValue.data(FamilyState(members: members));
+    } catch (e, st) {
+      state = AsyncValue.error(e.toString().replaceAll('Exception: ', ''), st);
+    }
+  }
+
   Future<void> addMember(FamilyMember member) async {
     state = const AsyncValue.loading();
     try {
-      final currentMembers = state.value?.members ?? [];
-      final newMembers = [...currentMembers, member];
-      await _box.put('members', newMembers.map((m) => {'id': m.id, 'name': m.name, 'relation': m.relation, 'bloodType': m.bloodType, 'dateOfBirth': m.dateOfBirth, 'notes': m.notes, 'createdAt': m.createdAt.toIso8601String()}).toList());
-      state = AsyncValue.data(FamilyState(members: newMembers));
+      final repository = ref.read(familyRepositoryProvider);
+      await repository.addMember({
+        'id': member.id,
+        'name': member.name,
+        'relation': member.relation,
+        'bloodType': member.bloodType,
+        'dateOfBirth': member.dateOfBirth,
+        'notes': member.notes,
+        'createdAt': member.createdAt.toIso8601String(),
+      });
+      await fetchMembers();
     } catch (e, st) {
-      state = AsyncValue.error(e.toString(), st);
+      state = AsyncValue.error(e.toString().replaceAll('Exception: ', ''), st);
     }
   }
 
   Future<void> deleteMember(String id) async {
-    final currentMembers = state.value?.members ?? [];
-    final newMembers = currentMembers.where((m) => m.id != id).toList();
-    await _box.put('members', newMembers.map((m) => {'id': m.id, 'name': m.name, 'relation': m.relation, 'bloodType': m.bloodType, 'dateOfBirth': m.dateOfBirth, 'notes': m.notes, 'createdAt': m.createdAt.toIso8601String()}).toList());
-    state = AsyncValue.data(FamilyState(members: newMembers));
+    try {
+      final repository = ref.read(familyRepositoryProvider);
+      await repository.deleteMember(id);
+      final currentMembers = state.value?.members ?? [];
+      final newMembers = currentMembers.where((m) => m.id != id).toList();
+      state = AsyncValue.data(FamilyState(members: newMembers));
+    } catch (e, st) {
+      state = AsyncValue.error(e.toString().replaceAll('Exception: ', ''), st);
+    }
   }
 }
 
