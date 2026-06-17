@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "591596935139",
+    "project_id": "wellnes-6e09f",
+    "storage_bucket": "wellnes-6e09f.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:591596935139:android:21c173b225207ce58732d6",
+        "android_client_info": {
+          "package_name": "com.wellnes.android"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAwL4dE_b1EdLAwbPHA5vbHq6Ul8e2LBvc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

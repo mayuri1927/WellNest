@@ -1,4 +1,5 @@
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class FirebaseService {
@@ -8,18 +9,22 @@ class FirebaseService {
     if (_initialized) return;
     
     try {
-      await Firebase.initializeApp(
-        options: FirebaseOptions(
-          apiKey: 'YOUR_API_KEY',
-          appId: 'YOUR_APP_ID',
-          messagingSenderId: 'YOUR_MESSAGING_SENDER_ID',
-          projectId: 'YOUR_PROJECT_ID',
-          storageBucket: 'YOUR_STORAGE_BUCKET',
-        ),
-      );
+      if (kIsWeb) {
+        await Firebase.initializeApp(
+          options: FirebaseOptions(
+            apiKey: 'AIzaSyDXI5nKyB4Vhf5k7mcdLb6GQrtucPIJ9CA',
+            appId: '1:591596935139:web:placeholder',
+            messagingSenderId: '591596935139',
+            projectId: 'wellnes-6e09f',
+            storageBucket: 'wellnes-6e09f.firebasestorage.app',
+          ),
+        );
+      } else {
+        await Firebase.initializeApp();
+      }
       _initialized = true;
     } catch (e) {
-      print('Firebase initialization error: $e');
+      debugPrint('Firebase initialization error: $e');
     }
   }
 

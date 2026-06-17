@@ -66,5 +66,9 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<key>FirebaseAppIDKey</key>
+	<string>1:591596935139:ios:bce09b5854d0e78b8732d6</string>
+	<key>GCMEnabled</key>
+	<true/>
 </dict>
 </plist>
