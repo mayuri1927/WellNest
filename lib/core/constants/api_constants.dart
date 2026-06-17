@@ -7,7 +7,7 @@ class ApiConstants {
     if (kDebugMode) {
       return 'http://localhost:3000/api/v1';
     }
-    return 'https://wellnest-api.up.railway.app/api/v1';
+    return 'https://wellnest-api-t52z.onrender.com/api/v1';
   }
   
   static const Duration connectTimeout = Duration(seconds: 30);
