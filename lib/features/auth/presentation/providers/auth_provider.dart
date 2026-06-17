@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import '../../data/repositories/auth_repository_impl.dart';
 
 class AuthState {
   final bool isAuthenticated;
@@ -65,29 +66,19 @@ class AuthNotifier extends AsyncNotifier<AuthState> {
     state = const AsyncValue.loading();
     
     try {
-      // Simulate network delay
-      await Future.delayed(const Duration(seconds: 1));
+      final repository = ref.read(authRepositoryProvider);
+      await repository.login(email, password);
       
-      // Mock validation
-      if (email.isEmpty || password.isEmpty) {
-        state = AsyncValue.error('Please fill in all fields', StackTrace.current);
-        return;
-      }
-
-      // Store user data
-      await _authBox.put('userId', 'user_${DateTime.now().millisecondsSinceEpoch}');
-      await _authBox.put('userName', email.split('@').first);
-      await _authBox.put('userEmail', email);
-
+      final user = await repository.getCurrentUser();
       state = AsyncValue.data(AuthState(
         isAuthenticated: true,
         hasSeenOnboarding: true,
-        userId: 'user_${DateTime.now().millisecondsSinceEpoch}',
-        userName: email.split('@').first,
-        userEmail: email,
+        userId: user?['userId'],
+        userName: user?['userName'],
+        userEmail: user?['userEmail'],
       ));
-    } catch (e, st) {
-      state = AsyncValue.error(e.toString(), st);
+    } catch (e) {
+      state = AsyncValue.error(e.toString().replaceAll('Exception: ', ''), StackTrace.current);
     }
   }
 
@@ -95,26 +86,19 @@ class AuthNotifier extends AsyncNotifier<AuthState> {
     state = const AsyncValue.loading();
     
     try {
-      await Future.delayed(const Duration(seconds: 1));
+      final repository = ref.read(authRepositoryProvider);
+      await repository.register(name, email, password);
       
-      if (name.isEmpty || email.isEmpty || password.isEmpty) {
-        state = AsyncValue.error('Please fill in all fields', StackTrace.current);
-        return;
-      }
-
-      await _authBox.put('userId', 'user_${DateTime.now().millisecondsSinceEpoch}');
-      await _authBox.put('userName', name);
-      await _authBox.put('userEmail', email);
-
+      final user = await repository.getCurrentUser();
       state = AsyncValue.data(AuthState(
         isAuthenticated: true,
         hasSeenOnboarding: true,
-        userId: 'user_${DateTime.now().millisecondsSinceEpoch}',
-        userName: name,
-        userEmail: email,
+        userId: user?['userId'],
+        userName: user?['userName'],
+        userEmail: user?['userEmail'],
       ));
-    } catch (e, st) {
-      state = AsyncValue.error(e.toString(), st);
+    } catch (e) {
+      state = AsyncValue.error(e.toString().replaceAll('Exception: ', ''), StackTrace.current);
     }
   }
 
@@ -122,22 +106,24 @@ class AuthNotifier extends AsyncNotifier<AuthState> {
     state = const AsyncValue.loading();
     
     try {
-      await Future.delayed(const Duration(seconds: 1));
-      
-      if (email.isEmpty) {
-        state = AsyncValue.error('Please enter your email', StackTrace.current);
-        return;
-      }
-
+      final repository = ref.read(authRepositoryProvider);
+      await repository.resetPassword(email);
       state = const AsyncValue.data(AuthState(hasSeenOnboarding: true));
-    } catch (e, st) {
-      state = AsyncValue.error(e.toString(), st);
+    } catch (e) {
+      state = AsyncValue.error(e.toString().replaceAll('Exception: ', ''), StackTrace.current);
     }
   }
 
   Future<void> logout() async {
-    await _authBox.clear();
-    state = const AsyncValue.data(AuthState(hasSeenOnboarding: true));
+    state = const AsyncValue.loading();
+    
+    try {
+      final repository = ref.read(authRepositoryProvider);
+      await repository.logout();
+      state = const AsyncValue.data(AuthState(hasSeenOnboarding: true));
+    } catch (e) {
+      state = AsyncValue.error(e.toString().replaceAll('Exception: ', ''), StackTrace.current);
+    }
   }
 
   void setOnboardingComplete() {
