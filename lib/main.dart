@@ -1,31 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'core/theme/app_theme.dart';
-import 'core/navigation/app_router.dart';
-import 'presentation/providers/auth_provider.dart';
+import 'app/routes/app_router.dart';
+import 'app/theme/app_theme.dart';
+import 'app/providers/theme_provider.dart';
 
-void main() async {
+void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  
-  await SystemChrome.setPreferredOrientations([
-    DeviceOrientation.portraitUp,
-    DeviceOrientation.portraitDown,
-  ]);
-
-  try {
-    await Firebase.initializeApp();
-  } catch (e) {
-    debugPrint('Firebase initialization error: $e');
-  }
-
   runApp(
-    ProviderScope(
-      overrides: [
-        authProvider.overrideWith((ref) => AuthNotifier(ref)),
-      ],
-      child: const WellNestApp(),
+    const ProviderScope(
+      child: WellNestApp(),
     ),
   );
 }
@@ -35,13 +18,15 @@ class WellNestApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final router = ref.watch(routerProvider);
+    final themeMode = ref.watch(themeModeProvider);
 
     return MaterialApp.router(
       title: 'WellNest',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
-      routerConfig: router,
+      darkTheme: AppTheme.darkTheme,
+      themeMode: themeMode,
+      routerConfig: appRouter,
     );
   }
 }
