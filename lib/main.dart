@@ -5,6 +5,7 @@ import 'app/routes/app_router.dart';
 import 'app/theme/app_theme.dart';
 import 'app/providers/theme_provider.dart';
 import 'core/services/firebase_service.dart';
+import 'core/services/firestore_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -22,6 +23,7 @@ void main() async {
   ]);
   
   await FirebaseService.initialize();
+  await FirestoreService.initialize();
   
   runApp(
     const ProviderScope(
