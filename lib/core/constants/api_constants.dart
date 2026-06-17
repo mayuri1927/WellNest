@@ -1,7 +1,15 @@
+import 'package:flutter/foundation.dart';
+
 class ApiConstants {
   ApiConstants._();
 
-  static const String baseUrl = 'http://localhost:3000/api/v1';
+  static String get baseUrl {
+    if (kDebugMode) {
+      return 'http://localhost:3000/api/v1';
+    }
+    return 'https://wellnest-api.up.railway.app/api/v1';
+  }
+  
   static const Duration connectTimeout = Duration(seconds: 30);
   static const Duration receiveTimeout = Duration(seconds: 30);
 }
