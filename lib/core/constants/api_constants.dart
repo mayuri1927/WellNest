@@ -5,11 +5,11 @@ class ApiConstants {
 
   static String get baseUrl {
     if (kDebugMode) {
-      return 'http://localhost:3000/api/v1';
+      return 'http://192.168.0.119:3000/api/v1';
     }
     return 'https://wellnest-api-t52z.onrender.com/api/v1';
   }
-  
+
   static const Duration connectTimeout = Duration(seconds: 30);
   static const Duration receiveTimeout = Duration(seconds: 30);
 }
