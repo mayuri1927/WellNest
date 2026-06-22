@@ -6,13 +6,14 @@ import '../../../../app/constants/app_strings.dart';
 import '../../../../app/routes/app_router.dart';
 import '../../../../shared/widgets/cards.dart';
 import '../../../../shared/widgets/common_widgets.dart';
-import '../../../../shared/widgets/loading_error.dart';
 import '../../../../core/utils/responsive.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../../workout/presentation/providers/workout_provider.dart';
 import '../../../meal/presentation/providers/meal_provider.dart';
 import '../../../medicine/presentation/providers/medicine_provider.dart';
 import '../../../appointment/presentation/providers/appointment_provider.dart';
+import '../../../health_profile/presentation/providers/health_profile_provider.dart';
+import '../../../../shared/enums/app_enums.dart';
 
 class DashboardScreen extends ConsumerWidget {
   const DashboardScreen({super.key});
@@ -24,6 +25,7 @@ class DashboardScreen extends ConsumerWidget {
     final mealState = ref.watch(mealProvider);
     final medicineState = ref.watch(medicineProvider);
     final appointmentState = ref.watch(appointmentProvider);
+    final healthState = ref.watch(healthProfileProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -36,13 +38,18 @@ class DashboardScreen extends ConsumerWidget {
             ),
             Text(
               AppStrings.appTagline,
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: AppColors.textSecondary,
-                  ),
+              style: Theme.of(
+                context,
+              ).textTheme.bodySmall?.copyWith(color: AppColors.textSecondary),
             ),
           ],
         ),
         actions: [
+          IconButton(
+            onPressed: () => context.push(AppRoutes.progressTracking),
+            icon: const Icon(Icons.analytics_outlined),
+            tooltip: 'Progress Tracking',
+          ),
           IconButton(
             onPressed: () => context.push(AppRoutes.settings),
             icon: const Icon(Icons.settings_outlined),
@@ -55,6 +62,7 @@ class DashboardScreen extends ConsumerWidget {
           ref.invalidate(mealProvider);
           ref.invalidate(medicineProvider);
           ref.invalidate(appointmentProvider);
+          ref.invalidate(healthProfileProvider);
         },
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(Spacing.md),
@@ -62,12 +70,9 @@ class DashboardScreen extends ConsumerWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _HealthSummarySection(),
+              _HealthSummarySection(healthState: healthState),
               const SizedBox(height: Spacing.lg),
-              const SectionHeader(
-                title: 'Quick Actions',
-                icon: Icons.bolt,
-              ),
+              const SectionHeader(title: 'Quick Actions', icon: Icons.bolt),
               _QuickActionsGrid(),
               const SizedBox(height: Spacing.lg),
               SectionHeader(
@@ -76,7 +81,9 @@ class DashboardScreen extends ConsumerWidget {
                 actionText: 'View All',
                 onActionTap: () => context.go(AppRoutes.appointments),
               ),
-              _AppointmentsPreview(appointments: appointmentState.value?.appointments ?? []),
+              _AppointmentsPreview(
+                appointments: appointmentState.value?.appointments ?? [],
+              ),
               const SizedBox(height: Spacing.lg),
               SectionHeader(
                 title: AppStrings.todaysMedicines,
@@ -84,7 +91,9 @@ class DashboardScreen extends ConsumerWidget {
                 actionText: 'View All',
                 onActionTap: () => context.go(AppRoutes.medicines),
               ),
-              _MedicinesPreview(medicines: medicineState.value?.medicines ?? []),
+              _MedicinesPreview(
+                medicines: medicineState.value?.medicines ?? [],
+              ),
               const SizedBox(height: Spacing.lg),
               SectionHeader(
                 title: AppStrings.workout,
@@ -111,8 +120,29 @@ class DashboardScreen extends ConsumerWidget {
 }
 
 class _HealthSummarySection extends StatelessWidget {
+  final AsyncValue healthState;
+
+  const _HealthSummarySection({required this.healthState});
+
   @override
   Widget build(BuildContext context) {
+    final profile = healthState.valueOrNull?.profile;
+    final recommendedCalories =
+        healthState.valueOrNull?.recommendedCalories ?? 2000;
+    final bmi = healthState.valueOrNull?.calculatedBmi;
+    final goal = profile?.healthGoal;
+
+    String goalLabel = 'Not set';
+    Color goalColor = Colors.white70;
+    if (goal != null) {
+      goalLabel = goal.label;
+      goalColor = goal == HealthGoal.loseWeight
+          ? Colors.orange
+          : goal == HealthGoal.gainWeight
+          ? Colors.blue
+          : Colors.green;
+    }
+
     return Container(
       padding: const EdgeInsets.all(Spacing.md),
       decoration: BoxDecoration(
@@ -125,12 +155,22 @@ class _HealthSummarySection extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
-                'Health Score',
-                style: TextStyle(
-                  color: Colors.white70,
-                  fontSize: 14,
-                ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Your Goal',
+                    style: TextStyle(color: Colors.white70, fontSize: 14),
+                  ),
+                  Text(
+                    goalLabel,
+                    style: TextStyle(
+                      color: goalColor,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
               ),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
@@ -138,42 +178,95 @@ class _HealthSummarySection extends StatelessWidget {
                   color: Colors.white.withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: const Row(
+                child: Row(
                   children: [
-                    Icon(Icons.trending_up, color: Colors.white, size: 16),
-                    SizedBox(width: 4),
+                    const Icon(
+                      Icons.local_fire_department,
+                      color: Colors.white,
+                      size: 16,
+                    ),
+                    const SizedBox(width: 4),
                     Text(
-                      '+5%',
-                      style: TextStyle(color: Colors.white, fontSize: 12),
+                      '$recommendedCalories kcal',
+                      style: const TextStyle(color: Colors.white, fontSize: 12),
                     ),
                   ],
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 8),
-          const Text(
-            '85',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 48,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          const Text(
-            'out of 100',
-            style: TextStyle(color: Colors.white70, fontSize: 14),
-          ),
           const SizedBox(height: 16),
-          Row(
-            children: [
-              _HealthMetric(label: 'Workouts', value: '12', icon: Icons.fitness_center),
-              const SizedBox(width: 24),
-              _HealthMetric(label: 'Meals', value: '45', icon: Icons.restaurant),
-              const SizedBox(width: 24),
-              _HealthMetric(label: 'Sleep', value: '7.5h', icon: Icons.bedtime),
+          if (profile != null) ...[
+            Row(
+              children: [
+                Expanded(
+                  child: _HealthMetric(
+                    label: 'Height',
+                    value: '${profile.height.toStringAsFixed(0)} cm',
+                    icon: Icons.height,
+                  ),
+                ),
+                Expanded(
+                  child: _HealthMetric(
+                    label: 'Weight',
+                    value: '${profile.weight.toStringAsFixed(1)} kg',
+                    icon: Icons.monitor_weight_outlined,
+                  ),
+                ),
+                Expanded(
+                  child: _HealthMetric(
+                    label: 'BMI',
+                    value: bmi?.toStringAsFixed(1) ?? '-',
+                    icon: Icons.analytics_outlined,
+                  ),
+                ),
+              ],
+            ),
+            if (profile.targetWeight != null) ...[
+              const SizedBox(height: 12),
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 8,
+                ),
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: 0.15),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(
+                      Icons.flag_outlined,
+                      color: Colors.white70,
+                      size: 16,
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      'Target: ${profile.targetWeight?.toStringAsFixed(1)} kg',
+                      style: const TextStyle(color: Colors.white, fontSize: 13),
+                    ),
+                  ],
+                ),
+              ),
             ],
-          ),
+          ] else ...[
+            const Text(
+              'Set up your health profile to get personalized goals',
+              style: TextStyle(color: Colors.white70, fontSize: 13),
+            ),
+            const SizedBox(height: 8),
+            TextButton(
+              onPressed: () => context.push(AppRoutes.healthProfileSetup),
+              child: const Text(
+                'Set Up Profile',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ],
         ],
       ),
     );
@@ -442,7 +535,9 @@ class _MedicinesPreview extends StatelessWidget {
                 child: Text(
                   med.isActive == true ? 'Active' : 'Inactive',
                   style: TextStyle(
-                    color: med.isActive == true ? AppColors.success : AppColors.error,
+                    color: med.isActive == true
+                        ? AppColors.success
+                        : AppColors.error,
                     fontSize: 12,
                     fontWeight: FontWeight.w500,
                   ),
@@ -486,7 +581,10 @@ class _WorkoutsPreview extends StatelessWidget {
                   color: AppColors.primary.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(Radii.md),
                 ),
-                child: const Icon(Icons.fitness_center, color: AppColors.primary),
+                child: const Icon(
+                  Icons.fitness_center,
+                  color: AppColors.primary,
+                ),
               ),
               const SizedBox(width: Spacing.md),
               Expanded(

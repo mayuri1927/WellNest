@@ -6,6 +6,7 @@ import '../../features/auth/presentation/screens/login_screen.dart';
 import '../../features/auth/presentation/screens/signup_screen.dart';
 import '../../features/auth/presentation/screens/forgot_password_screen.dart';
 import '../../features/health_profile/presentation/screens/health_profile_setup_screen.dart';
+import '../../features/health_profile/presentation/screens/progress_tracking_screen.dart';
 import '../../features/dashboard/presentation/screens/main_shell.dart';
 import '../../features/dashboard/presentation/screens/dashboard_screen.dart';
 import '../../features/workout/presentation/screens/workout_list_screen.dart';
@@ -32,6 +33,7 @@ class AppRoutes {
   static const String signup = '/signup';
   static const String forgotPassword = '/forgot-password';
   static const String healthProfileSetup = '/health-profile-setup';
+  static const String progressTracking = '/progress-tracking';
   static const String main = '/main';
   static const String dashboard = '/main/dashboard';
   static const String workout = '/main/workout';
@@ -81,6 +83,10 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
       path: AppRoutes.healthProfileSetup,
       builder: (context, state) => const HealthProfileSetupScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.progressTracking,
+      builder: (context, state) => const ProgressTrackingScreen(),
     ),
     ShellRoute(
       navigatorKey: _shellNavigatorKey,
