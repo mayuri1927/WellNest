@@ -9,9 +9,9 @@ import 'core/services/firestore_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
+
   await Hive.initFlutter();
-  
+
   await Future.wait([
     Hive.openBox('auth'),
     Hive.openBox('workouts'),
@@ -20,16 +20,13 @@ void main() async {
     Hive.openBox('appointments'),
     Hive.openBox('documents'),
     Hive.openBox('family'),
+    Hive.openBox('health_profile'),
   ]);
-  
+
   await FirebaseService.initialize();
   await FirestoreService.initialize();
-  
-  runApp(
-    const ProviderScope(
-      child: WellNestApp(),
-    ),
-  );
+
+  runApp(const ProviderScope(child: WellNestApp()));
 }
 
 class WellNestApp extends ConsumerWidget {
