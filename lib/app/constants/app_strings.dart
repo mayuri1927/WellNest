@@ -86,6 +86,21 @@ class AppStrings {
   static const String notificationSettings = 'Notification Settings';
   static const String privacySettings = 'Privacy Settings';
 
+  // Health Profile
+  static const String healthProfile = 'Health Profile';
+  static const String healthGoal = 'Health Goal';
+  static const String setHealthGoals = 'Set Health Goals';
+  static const String height = 'Height';
+  static const String weight = 'Weight';
+  static const String age = 'Age';
+  static const String targetWeight = 'Target Weight';
+  static const String dailyCalorieTarget = 'Daily Calorie Target';
+  static const String bmi = 'BMI';
+  static const String bmr = 'BMR';
+  static const String loseWeight = 'Lose Weight';
+  static const String gainWeight = 'Gain Weight';
+  static const String maintainWeight = 'Maintain Weight';
+
   // Common
   static const String save = 'Save';
   static const String cancel = 'Cancel';
@@ -108,7 +123,8 @@ class AppStrings {
 
   // Errors
   static const String somethingWentWrong = 'Something went wrong';
-  static const String networkError = 'Network error. Please check your connection.';
+  static const String networkError =
+      'Network error. Please check your connection.';
   static const String serverError = 'Server error. Please try again later.';
   static const String unauthorized = 'Unauthorized access';
   static const String notFound = 'Not found';
@@ -117,7 +133,8 @@ class AppStrings {
   static const String fieldRequired = 'This field is required';
   static const String invalidEmail = 'Please enter a valid email';
   static const String invalidPhone = 'Please enter a valid phone number';
-  static const String passwordTooShort = 'Password must be at least 8 characters';
+  static const String passwordTooShort =
+      'Password must be at least 8 characters';
   static const String passwordsDoNotMatch = 'Passwords do not match';
 
   // Success Messages

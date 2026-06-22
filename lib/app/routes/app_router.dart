@@ -5,6 +5,7 @@ import '../../features/auth/presentation/screens/onboarding_screen.dart';
 import '../../features/auth/presentation/screens/login_screen.dart';
 import '../../features/auth/presentation/screens/signup_screen.dart';
 import '../../features/auth/presentation/screens/forgot_password_screen.dart';
+import '../../features/health_profile/presentation/screens/health_profile_setup_screen.dart';
 import '../../features/dashboard/presentation/screens/main_shell.dart';
 import '../../features/dashboard/presentation/screens/dashboard_screen.dart';
 import '../../features/workout/presentation/screens/workout_list_screen.dart';
@@ -30,6 +31,7 @@ class AppRoutes {
   static const String login = '/login';
   static const String signup = '/signup';
   static const String forgotPassword = '/forgot-password';
+  static const String healthProfileSetup = '/health-profile-setup';
   static const String main = '/main';
   static const String dashboard = '/main/dashboard';
   static const String workout = '/main/workout';
@@ -49,7 +51,8 @@ class AppRoutes {
 }
 
 final GlobalKey<NavigatorState> _rootNavigatorKey = GlobalKey<NavigatorState>();
-final GlobalKey<NavigatorState> _shellNavigatorKey = GlobalKey<NavigatorState>();
+final GlobalKey<NavigatorState> _shellNavigatorKey =
+    GlobalKey<NavigatorState>();
 
 final GoRouter appRouter = GoRouter(
   navigatorKey: _rootNavigatorKey,
@@ -75,21 +78,23 @@ final GoRouter appRouter = GoRouter(
       path: AppRoutes.forgotPassword,
       builder: (context, state) => const ForgotPasswordScreen(),
     ),
+    GoRoute(
+      path: AppRoutes.healthProfileSetup,
+      builder: (context, state) => const HealthProfileSetupScreen(),
+    ),
     ShellRoute(
       navigatorKey: _shellNavigatorKey,
       builder: (context, state, child) => MainShell(child: child),
       routes: [
         GoRoute(
           path: AppRoutes.dashboard,
-          pageBuilder: (context, state) => const NoTransitionPage(
-            child: DashboardScreen(),
-          ),
+          pageBuilder: (context, state) =>
+              const NoTransitionPage(child: DashboardScreen()),
         ),
         GoRoute(
           path: AppRoutes.workout,
-          pageBuilder: (context, state) => const NoTransitionPage(
-            child: WorkoutListScreen(),
-          ),
+          pageBuilder: (context, state) =>
+              const NoTransitionPage(child: WorkoutListScreen()),
         ),
         GoRoute(
           path: AppRoutes.workoutAdd,
@@ -97,9 +102,8 @@ final GoRouter appRouter = GoRouter(
         ),
         GoRoute(
           path: AppRoutes.meals,
-          pageBuilder: (context, state) => const NoTransitionPage(
-            child: MealListScreen(),
-          ),
+          pageBuilder: (context, state) =>
+              const NoTransitionPage(child: MealListScreen()),
         ),
         GoRoute(
           path: AppRoutes.mealsAdd,
@@ -107,9 +111,8 @@ final GoRouter appRouter = GoRouter(
         ),
         GoRoute(
           path: AppRoutes.family,
-          pageBuilder: (context, state) => const NoTransitionPage(
-            child: FamilyListScreen(),
-          ),
+          pageBuilder: (context, state) =>
+              const NoTransitionPage(child: FamilyListScreen()),
         ),
         GoRoute(
           path: AppRoutes.familyAdd,
@@ -117,9 +120,8 @@ final GoRouter appRouter = GoRouter(
         ),
         GoRoute(
           path: AppRoutes.medicines,
-          pageBuilder: (context, state) => const NoTransitionPage(
-            child: MedicineListScreen(),
-          ),
+          pageBuilder: (context, state) =>
+              const NoTransitionPage(child: MedicineListScreen()),
         ),
         GoRoute(
           path: AppRoutes.medicinesAdd,
@@ -127,9 +129,8 @@ final GoRouter appRouter = GoRouter(
         ),
         GoRoute(
           path: AppRoutes.appointments,
-          pageBuilder: (context, state) => const NoTransitionPage(
-            child: AppointmentListScreen(),
-          ),
+          pageBuilder: (context, state) =>
+              const NoTransitionPage(child: AppointmentListScreen()),
         ),
         GoRoute(
           path: AppRoutes.appointmentsAdd,
@@ -137,9 +138,8 @@ final GoRouter appRouter = GoRouter(
         ),
         GoRoute(
           path: AppRoutes.documents,
-          pageBuilder: (context, state) => const NoTransitionPage(
-            child: DocumentListScreen(),
-          ),
+          pageBuilder: (context, state) =>
+              const NoTransitionPage(child: DocumentListScreen()),
         ),
         GoRoute(
           path: AppRoutes.documentsUpload,
@@ -147,15 +147,13 @@ final GoRouter appRouter = GoRouter(
         ),
         GoRoute(
           path: AppRoutes.profile,
-          pageBuilder: (context, state) => const NoTransitionPage(
-            child: ProfileScreen(),
-          ),
+          pageBuilder: (context, state) =>
+              const NoTransitionPage(child: ProfileScreen()),
         ),
         GoRoute(
           path: AppRoutes.settings,
-          pageBuilder: (context, state) => const NoTransitionPage(
-            child: SettingsScreen(),
-          ),
+          pageBuilder: (context, state) =>
+              const NoTransitionPage(child: SettingsScreen()),
         ),
       ],
     ),

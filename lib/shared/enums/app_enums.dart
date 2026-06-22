@@ -12,11 +12,10 @@ enum WorkoutType {
 
   const WorkoutType(this.label, this.value);
 
-  static WorkoutType fromString(String value) =>
-      WorkoutType.values.firstWhere(
-        (e) => e.value == value,
-        orElse: () => WorkoutType.other,
-      );
+  static WorkoutType fromString(String value) => WorkoutType.values.firstWhere(
+    (e) => e.value == value,
+    orElse: () => WorkoutType.other,
+  );
 }
 
 enum MealType {
@@ -31,9 +30,9 @@ enum MealType {
   const MealType(this.label, this.value);
 
   static MealType fromString(String value) => MealType.values.firstWhere(
-        (e) => e.value == value,
-        orElse: () => MealType.snack,
-      );
+    (e) => e.value == value,
+    orElse: () => MealType.snack,
+  );
 }
 
 enum MedicineUnit {
@@ -49,10 +48,8 @@ enum MedicineUnit {
 
   const MedicineUnit(this.label, this.value);
 
-  static MedicineUnit fromString(String value) => MedicineUnit.values.firstWhere(
-        (e) => e.value == value,
-        orElse: () => MedicineUnit.tablet,
-      );
+  static MedicineUnit fromString(String value) => MedicineUnit.values
+      .firstWhere((e) => e.value == value, orElse: () => MedicineUnit.tablet);
 }
 
 enum DocumentType {
@@ -68,10 +65,8 @@ enum DocumentType {
 
   const DocumentType(this.label, this.value);
 
-  static DocumentType fromString(String value) => DocumentType.values.firstWhere(
-        (e) => e.value == value,
-        orElse: () => DocumentType.other,
-      );
+  static DocumentType fromString(String value) => DocumentType.values
+      .firstWhere((e) => e.value == value, orElse: () => DocumentType.other);
 }
 
 enum Gender {
@@ -85,9 +80,9 @@ enum Gender {
   const Gender(this.label, this.value);
 
   static Gender fromString(String value) => Gender.values.firstWhere(
-        (e) => e.value == value,
-        orElse: () => Gender.other,
-      );
+    (e) => e.value == value,
+    orElse: () => Gender.other,
+  );
 }
 
 enum BloodType {
@@ -106,9 +101,9 @@ enum BloodType {
   const BloodType(this.label, this.value);
 
   static BloodType fromString(String value) => BloodType.values.firstWhere(
-        (e) => e.value == value,
-        orElse: () => BloodType.oPositive,
-      );
+    (e) => e.value == value,
+    orElse: () => BloodType.oPositive,
+  );
 }
 
 enum AppointmentStatus {
@@ -129,6 +124,23 @@ enum AppointmentStatus {
       );
 }
 
+enum HealthGoal {
+  loseWeight('Lose Weight', 'lose_weight', 'lose'),
+  gainWeight('Gain Weight', 'gain_weight', 'gain'),
+  maintainWeight('Maintain Weight', 'maintain_weight', 'maintain');
+
+  final String label;
+  final String value;
+  final String apiValue;
+
+  const HealthGoal(this.label, this.value, this.apiValue);
+
+  static HealthGoal fromString(String value) => HealthGoal.values.firstWhere(
+    (e) => e.value == value || e.apiValue == value,
+    orElse: () => HealthGoal.maintainWeight,
+  );
+}
+
 enum OnboardingPage {
   welcome(
     title: 'Welcome to WellNest',
@@ -137,7 +149,8 @@ enum OnboardingPage {
   ),
   workouts(
     title: 'Track Your Workouts',
-    description: 'Log exercises, monitor progress, and achieve your fitness goals',
+    description:
+        'Log exercises, monitor progress, and achieve your fitness goals',
     icon: '💪',
   ),
   meals(

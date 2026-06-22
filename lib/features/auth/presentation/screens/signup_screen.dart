@@ -6,7 +6,6 @@ import '../../../../app/constants/app_strings.dart';
 import '../../../../app/routes/app_router.dart';
 import '../../../../shared/widgets/buttons.dart';
 import '../../../../shared/widgets/text_fields.dart';
-import '../../../../shared/widgets/common_widgets.dart';
 import '../../../../shared/widgets/loading_error.dart';
 import '../../../../core/utils/responsive.dart';
 import '../../../../shared/extensions/extensions.dart';
@@ -39,7 +38,9 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
   Future<void> _signup() async {
     if (!_formKey.currentState!.validate()) return;
 
-    await ref.read(authProvider.notifier).register(
+    await ref
+        .read(authProvider.notifier)
+        .register(
           _nameController.text.trim(),
           _emailController.text.trim(),
           _passwordController.text,
@@ -48,7 +49,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
     if (mounted) {
       final authState = ref.read(authProvider);
       if (authState.valueOrNull?.isAuthenticated == true) {
-        context.go(AppRoutes.dashboard);
+        context.go(AppRoutes.healthProfileSetup);
       }
     }
   }
@@ -76,15 +77,15 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                 Text(
                   AppStrings.createAccount,
                   style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 const SizedBox(height: Spacing.sm),
                 Text(
                   'Join WellNest family',
                   style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        color: AppColors.textSecondary,
-                      ),
+                    color: AppColors.textSecondary,
+                  ),
                 ),
                 const SizedBox(height: Spacing.xl),
                 AppTextField(
